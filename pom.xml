@@ -110,6 +110,11 @@
 			<groupId>io.openliberty.boosters</groupId>
 			<artifactId>cdi</artifactId>
 		</dependency>
+        <dependency>
+			<groupId>io.openliberty.boosters</groupId>
+			<artifactId>jsonp</artifactId>
+		</dependency>
+
 
 
         <!-- Java utility classes -->

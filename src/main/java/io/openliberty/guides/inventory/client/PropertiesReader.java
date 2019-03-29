@@ -6,6 +6,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Properties;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -23,10 +28,23 @@ public class PropertiesReader implements MessageBodyReader<Properties> {
 	public Properties readFrom(Class<Properties> type, Type genericType, Annotation[] annotations, MediaType mediaType,
 			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
 			throws IOException, WebApplicationException {
-		Properties props = new Properties();
-		props.setProperty("a",  "1");
-		props.setProperty("b",  "2");
-		return props;
+
+		JsonReader jr = Json.createReader(entityStream);
+		JsonObject json = jr.readObject();
+		Properties retVal = new Properties();
+		
+		json.keySet().forEach(key -> {
+            JsonValue value = json.get(key);
+            if (!JsonValue.NULL.equals(value)) {
+            	if (value.getValueType() != JsonValue.ValueType.STRING) {
+            		throw new IllegalArgumentException("Non-String JSON prop value found in payload.  Sample data is more than this sample can deal with.  It's not intended to handle any payload.");
+            	}
+            	JsonString jstr = (JsonString)value;
+            	           	
+            	retVal.setProperty(key, jstr.getString());
+            }
+		});
+		return retVal;
 	}
 
 }
