@@ -24,12 +24,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import it.io.openliberty.guides.util.TestURL;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class RestClientTest {
 
-  private static String port;
+  private static String baseURL;
 
   private Client client;
 
@@ -37,7 +40,7 @@ public class RestClientTest {
 
   @BeforeClass
   public static void oneTimeSetup() {
-    port = System.getProperty("liberty.test.port");
+	  baseURL = TestURL.getBaseURL();
   }
 
   @Before
@@ -60,7 +63,7 @@ public class RestClientTest {
   public void testDefaultLocalhost() {
     String hostname = "localhost";
 
-    String url = "http://localhost:" + port + "/" + INVENTORY_SYSTEMS + "/" + hostname;
+    String url = baseURL + INVENTORY_SYSTEMS + "/" + hostname;
 
     JsonObject obj = fetchProperties(url);
 
@@ -77,7 +80,7 @@ public class RestClientTest {
       System.err.println("Unknown Host.");
     }
 
-    String url = "http://localhost:" + port + "/" + INVENTORY_SYSTEMS + "/" + hostname;
+    String url = baseURL + INVENTORY_SYSTEMS + "/" + hostname;
 
     JsonObject obj = fetchProperties(url);
 

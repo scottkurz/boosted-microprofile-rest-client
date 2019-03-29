@@ -21,12 +21,14 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.provider.jsrjsonp.JsrJsonpProvider;
 import org.junit.Test;
 
+import it.io.openliberty.guides.util.TestURL;
+
 public class SystemEndpointTest {
 
  @Test
  public void testGetProperties() {
-     String port = System.getProperty("liberty.test.port");
-     String url = "http://localhost:" + port + "/";
+
+	 String url = TestURL.getBaseURL();
 
      Client client = ClientBuilder.newClient();
      client.register(JsrJsonpProvider.class);
