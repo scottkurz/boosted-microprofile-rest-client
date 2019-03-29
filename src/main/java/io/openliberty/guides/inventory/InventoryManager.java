@@ -37,7 +37,7 @@ import io.openliberty.guides.inventory.client.UnknownUrlExceptionMapper;
 public class InventoryManager {
 
   private List<SystemData> systems = Collections.synchronizedList(new ArrayList<>());
-  private final String DEFAULT_PORT = System.getProperty("default.http.port", "9080");
+  private final String DEFAULT_PORT = System.getProperty("default.http.port", "8080");
   //private final String DEFAULT_PORT = System.getProperty("default.http.port");
 
   @Inject
