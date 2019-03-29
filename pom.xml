@@ -17,6 +17,10 @@
         <!-- tag::ports[] -->
         <testServerHttpPort>8080</testServerHttpPort>
         <testServerHttpsPort>9443</testServerHttpsPort>
+
+        <!-- Default = empty '' -->
+        <ctx.root></ctx.root>
+
         <!-- end::ports[] -->
     </properties>
 
@@ -27,6 +31,9 @@
                 <activeByDefault>false</activeByDefault>
                 <property><name>tomee</name></property>
             </activation>
+    <properties>
+        <ctx.root>${project.artifactId}-${project.version}</ctx.root>
+    </properties>
     <dependencies>
         <dependency>
 			<groupId>io.openliberty.boosters</groupId>
@@ -187,8 +194,8 @@
                             </includes>
                             <!-- tag::system-props[] -->
                             <systemPropertyVariables>
-                     			<liberty.test.port>${testServerHttpPort}
-                                 </liberty.test.port>
+                     			<liberty.test.port>${testServerHttpPort}</liberty.test.port>
+                     			<ctx.root>${ctx.root}</ctx.root>
                             </systemPropertyVariables>
                             <!-- end::system-props[] -->
                             <runOrder>reversealphabetical</runOrder>

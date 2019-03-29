@@ -9,10 +9,11 @@ public class TestURL {
 	 */
 	public static String getBaseURL() {
      String port = System.getProperty("liberty.test.port");
-	 if (Boolean.getBoolean("ctx.root")) {
-		 return "http://localhost:" + port + "/" + System.getProperty("ctxRoot") + "/";
-	 } else {
+     String ctxRoot = System.getProperty("ctx.root");
+     if (ctxRoot == null || ctxRoot.equals("/") || ctxRoot.equals("")) {
 		 return "http://localhost:" + port + "/";
+	 } else {
+		 return "http://localhost:" + port + "/" + ctxRoot + "/";
 	 }
 	}
 }
