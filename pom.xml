@@ -15,7 +15,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- tag::ports[] -->
-        <testServerHttpPort>8080</testServerHttpPort>
+        <testServerHttpPort>9080</testServerHttpPort>
         <testServerHttpsPort>9443</testServerHttpsPort>
 
         <!-- Default = empty '' -->
@@ -31,15 +31,16 @@
                 <activeByDefault>false</activeByDefault>
                 <property><name>tomee</name></property>
             </activation>
-    <properties>
-        <ctx.root>${project.artifactId}-${project.version}</ctx.root>
-    </properties>
-    <dependencies>
-        <dependency>
-			<groupId>io.openliberty.boosters</groupId>
-			<artifactId>tomee</artifactId>
-		</dependency>
-    </dependencies>
+            <properties>
+                <ctx.root>${project.artifactId}-${project.version}</ctx.root>
+                <testServerHttpPort>8080</testServerHttpPort>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>io.openliberty.boosters</groupId>
+                    <artifactId>tomee</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
     
