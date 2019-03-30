@@ -25,6 +25,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.enterprise.context.ApplicationScoped;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import io.openliberty.guides.inventory.model.InventoryList;
@@ -37,9 +38,18 @@ import io.openliberty.guides.inventory.client.UnknownUrlExceptionMapper;
 public class InventoryManager {
 
   private List<SystemData> systems = Collections.synchronizedList(new ArrayList<>());
-  private final String DEFAULT_PORT = System.getProperty("default.http.port", "8080");
+  
+  /**
+   * This is the port we're going to use for the dynamically-build invocation of the system resource
+   * on the "back-end" port, so we don't want to confuse it with the HTTP port that this InventoryManager
+   * instance is running under, but rather use a totally new configuration property.
+   * 
+   * This allows us to invoke the back-end service on a remote host, like we can with the MP RestClient invocation
+   */
   //private final String DEFAULT_PORT = System.getProperty("default.http.port");
-
+  @Inject @ConfigProperty(name="back.end.system.port")
+  private String backEndSystemServicePort;
+  
   @Inject
   @RestClient
   private SystemClient defaultRestClient;
@@ -82,7 +92,7 @@ public class InventoryManager {
 
   // tag::builder[]
   private Properties getPropertiesWithGivenHostName(String hostname) {
-    String customURLString = "http://" + hostname + ":" + DEFAULT_PORT + "/system";
+    String customURLString = "http://" + hostname + ":" + backEndSystemServicePort + "/system";
     URL customURL = null;
     try {
       customURL = new URL(customURLString);
