@@ -13,26 +13,29 @@
 // tag::manager[]
 package io.openliberty.guides.inventory;
 
+import java.net.ConnectException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.net.MalformedURLException;
-import javax.ws.rs.ProcessingException;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import javax.inject.Inject;
+
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import io.openliberty.guides.inventory.model.InventoryList;
-import io.openliberty.guides.inventory.model.SystemData;
+
 import io.openliberty.guides.inventory.client.SystemClient;
 import io.openliberty.guides.inventory.client.UnknownUrlException;
 import io.openliberty.guides.inventory.client.UnknownUrlExceptionMapper;
+import io.openliberty.guides.inventory.model.InventoryList;
+import io.openliberty.guides.inventory.model.SystemData;
 
 @ApplicationScoped
 public class InventoryManager {
@@ -114,7 +117,7 @@ public class InventoryManager {
 
   private void handleProcessingException(ProcessingException ex) {
     Throwable rootEx = ExceptionUtils.getRootCause(ex);
-    if (rootEx != null && rootEx instanceof UnknownHostException) {
+    if (rootEx != null && (rootEx instanceof UnknownHostException || rootEx instanceof ConnectException)) {
       System.err.println("The specified host is unknown.");
     } else {
       throw ex;
