@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -15,12 +15,8 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- tag::ports[] -->
-		<testServerHttpPort>9080</testServerHttpPort>
-		<testServerHttpsPort>9443</testServerHttpsPort>
-
-		<!-- Default = empty '' -->
-		<ctx.root></ctx.root>
-
+		<testServerHttpPort>8080</testServerHttpPort>
+		<testServerHttpsPort>8443</testServerHttpsPort>
 		<!-- end::ports[] -->
 	</properties>
 
@@ -33,9 +29,6 @@
 					<name>tomee</name>
 				</property>
 			</activation>
-			<properties>
-				<ctx.root>${project.artifactId}-${project.version}</ctx.root>
-			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>io.openliberty.boosters</groupId>
@@ -202,18 +195,6 @@
 						<goals>
 							<goal>integration-test</goal>
 						</goals>
-						<configuration>
-							<includes>
-								<include>**/it/**/*.java</include>
-							</includes>
-							<!-- tag::system-props[] -->
-							<systemPropertyVariables>
-								<liberty.test.port>${testServerHttpPort}</liberty.test.port>
-								<ctx.root>${ctx.root}</ctx.root>
-							</systemPropertyVariables>
-							<!-- end::system-props[] -->
-							<runOrder>reversealphabetical</runOrder>
-						</configuration>
 					</execution>
 					<execution>
 						<id>verify-results</id>
@@ -223,6 +204,16 @@
 					</execution>
 				</executions>
 				<configuration>
+					<includes>
+						<include>**/it/**/*.java</include>
+					</includes>
+					<!-- tag::system-props[] -->
+					<systemPropertyVariables>
+						<liberty.test.port>${testServerHttpPort}</liberty.test.port>
+						<ctx.root></ctx.root>
+					</systemPropertyVariables>
+					<!-- end::system-props[] -->
+					<runOrder>reversealphabetical</runOrder>
 					<summaryFile>
 						${project.build.directory}/test-reports/it/failsafe-summary.xml
 					</summaryFile>
