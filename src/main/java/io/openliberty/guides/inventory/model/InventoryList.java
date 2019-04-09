@@ -23,6 +23,7 @@ public class InventoryList {
   }
 
   public List<SystemData> getSystems() {
+    //System.out.println("getting systems");
     return systems;
   }
 
