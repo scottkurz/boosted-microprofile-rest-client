@@ -7,4 +7,12 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+	
+	<!--
+	<persistence-context-ref>
+		<persistence-context-ref-name>jpasample/entitymanager</persistence-context-ref-name>
+		<persistence-unit-name>guideapp-persister</persistence-unit-name>
+	</persistence-context-ref>
+	-->
+	
 </web-app>

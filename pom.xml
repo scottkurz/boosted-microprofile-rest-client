@@ -42,6 +42,19 @@
 			<groupId>io.openliberty.boosters</groupId>
 			<artifactId>jsonp</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.openliberty.boosters</groupId>
+			<artifactId>jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>javax.activation-api</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.openliberty.boosters</groupId>
+			<artifactId>jdbc</artifactId>
+		</dependency>
 
 		<!-- For tests -->
 		<dependency>

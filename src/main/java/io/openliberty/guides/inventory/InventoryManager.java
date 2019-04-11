@@ -35,12 +35,32 @@ import io.openliberty.guides.inventory.client.SystemClient;
 import io.openliberty.guides.inventory.client.UnknownUrlException;
 import io.openliberty.guides.inventory.client.UnknownUrlExceptionMapper;
 import io.openliberty.guides.inventory.model.InventoryList;
+import io.openliberty.guides.inventory.model.InvokeTracker;
 import io.openliberty.guides.inventory.model.SystemData;
+
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 
 @ApplicationScoped
 public class InventoryManager {
-
+	
   private List<SystemData> systems = Collections.synchronizedList(new ArrayList<>());
+  
+  private static String newline = System.getProperty("line.separator");
+  
+  @PersistenceContext(unitName = "guideapp-persister")
+  public EntityManager em;
+
   
   /**
    * This is the port we're going to use for the dynamically-build invocation of the system resource
@@ -65,19 +85,83 @@ public class InventoryManager {
       properties = getPropertiesWithGivenHostName(hostname);
     }
 
+    int cnt = getInvokeCnt(hostname);
+    incInvokeCnt(hostname);
+    System.out.println("AJM: app invoked : " + cnt + " times for host: " + hostname);
     return properties;
   }
 
+  public int getInvokeCnt(String hostname) {
+
+		InvokeTracker invTracker = null;
+		try {
+			Context ctx = new InitialContext();
+			// Before getting an EntityManager, start a global transaction
+			UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+			tran.begin();
+			
+			invTracker = em.find(InvokeTracker.class, hostname);
+			if (invTracker == null) {
+				createInvokeCnt(new InvokeTracker(hostname));
+				invTracker = em.find(InvokeTracker.class, hostname);
+			}
+			// Commit the transaction
+			tran.commit();
+		} catch (Exception e) {
+			System.out.println("Something went wrong. Caught exception " + e + newline);
+		}
+		return invTracker.getCount();
+	}
+  
+	public void incInvokeCnt(String hostname) {
+		
+		try {
+			Context ctx = new InitialContext();
+			// Before getting an EntityManager, start a global transaction
+			UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+			tran.begin();
+			InvokeTracker invTracker = em.find(InvokeTracker.class, hostname);
+			invTracker.setCount();
+
+			// Commit the transaction
+			tran.commit();
+		} catch (Exception e) {
+	        System.out.println("Something went wrong. Caught exception " + e + newline);
+	    }
+	}
+	
   public void add(String hostname, Properties systemProps) {
+	SystemData host = null;
     Properties props = new Properties();
     props.setProperty("os.name", systemProps.getProperty("os.name"));
     props.setProperty("user.name", systemProps.getProperty("user.name"));
-
-    SystemData host = new SystemData(hostname, props);
+	
+	host = new SystemData(hostname, props);
     if (!systems.contains(host))
       systems.add(host);
   }
 
+  // do EM / JPA stuff here?
+  public void createInvokeCnt(InvokeTracker invokeTracker){
+	try {
+    	Context ctx = new InitialContext();
+        // Before getting an EntityManager, start a global transaction
+        UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
+        tran.begin();
+
+        System.out.println("AJM: Creating a new InvokeTracker with " + em.getDelegate().getClass() + newline);
+
+        em.persist(invokeTracker);
+
+        // Commit the transaction 
+        tran.commit();
+        String hostname = invokeTracker.getHostname();
+        System.out.println("Created and persisted SystemData instance for host name " + hostname + newline);
+	} catch (Exception e) {
+        System.out.println("Something went wrong. Caught exception " + e + newline);
+    }	
+  }
+  
   public InventoryList list() {
     return new InventoryList(systems);
   }
