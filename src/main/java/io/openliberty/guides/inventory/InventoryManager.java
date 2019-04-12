@@ -18,11 +18,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 
@@ -50,6 +53,8 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.logging.Logger;
+
 
 @ApplicationScoped
 public class InventoryManager {
@@ -58,8 +63,10 @@ public class InventoryManager {
   
   private static String newline = System.getProperty("line.separator");
   
+  Logger LOG = Logger.getLogger(InventoryManager.class.getName());
+  
   @PersistenceContext(unitName = "guideapp-persister")
-  public EntityManager em;
+  private EntityManager em;
 
   
   /**
@@ -77,38 +84,83 @@ public class InventoryManager {
   @RestClient
   private SystemClient defaultRestClient;
 
-  public Properties get(String hostname) {
-    Properties properties = null;
-    if (hostname.equals("localhost")) {
-      properties = getPropertiesWithDefaultHostName();
-    } else {
-      properties = getPropertiesWithGivenHostName(hostname);
-    }
-
-    int cnt = getInvokeCnt(hostname);
-    incInvokeCnt(hostname);
-    System.out.println("AJM: app invoked : " + cnt + " times for host: " + hostname);
-    return properties;
-  }
-
-  public int getInvokeCnt(String hostname) {
-
-		InvokeTracker invTracker = null;
+	public Properties get(String hostname) {
+		Properties properties = null;
+		int cnt = 0;
 		try {
+			
 			Context ctx = new InitialContext();
 			// Before getting an EntityManager, start a global transaction
 			UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
 			tran.begin();
+			
+			if (hostname.equals("localhost")) {
+				properties = getPropertiesWithDefaultHostName();
+			} else {
+				properties = getPropertiesWithGivenHostName(hostname);
+			}
+
+			incInvokeCnt(hostname);
+			cnt = getInvokeCnt(hostname);
+			Date setInvokeTS = Calendar.getInstance().getTime();
+			LOG.info("current invocation timestamp: " + setInvokeTS);
+			Date lastInvokeTS = getLastInvokedTS(hostname);
+			
+			if (lastInvokeTS != null) {
+				LOG.info("The timestamp of previous invocation, as obtained from the DB: " + lastInvokeTS);
+			}
+			else {
+				LOG.info("This is the first time the app has been invoked for the provided host: " + hostname);
+			}
+			
+			setInvokeTS(hostname, setInvokeTS);
+			tran.commit();
+		} catch (Exception e) {
+			LOG.info("Something went wrong. Caught exception " + e + newline);
+		}
+		LOG.info("App invoked : " + cnt + " times for host: " + hostname);
+		return properties;
+	}
+
+  private Date getLastInvokedTS(String hostname) {
+	  InvokeTracker invTracker = null;
+		try {
 			
 			invTracker = em.find(InvokeTracker.class, hostname);
 			if (invTracker == null) {
 				createInvokeCnt(new InvokeTracker(hostname));
 				invTracker = em.find(InvokeTracker.class, hostname);
 			}
-			// Commit the transaction
-			tran.commit();
+			
 		} catch (Exception e) {
-			System.out.println("Something went wrong. Caught exception " + e + newline);
+			LOG.info("Something went wrong. Caught exception " + e + newline);
+		}
+		return invTracker.getTimestamp();
+	}
+
+private void setInvokeTS(String hostname, Date time) {
+		try {
+			InvokeTracker invTracker = em.find(InvokeTracker.class, hostname);
+			invTracker.setTimestamp(time);
+		} catch (Exception e) {
+			LOG.info("Something went wrong. Caught exception " + e + newline);
+	    }
+		
+	}
+
+public int getInvokeCnt(String hostname) {
+
+		InvokeTracker invTracker = null;
+		try {
+			
+			invTracker = em.find(InvokeTracker.class, hostname);
+			if (invTracker == null) {
+				createInvokeCnt(new InvokeTracker(hostname));
+				invTracker = em.find(InvokeTracker.class, hostname);
+			}
+			
+		} catch (Exception e) {
+			LOG.info("Something went wrong. Caught exception " + e + newline);
 		}
 		return invTracker.getCount();
 	}
@@ -116,17 +168,10 @@ public class InventoryManager {
 	public void incInvokeCnt(String hostname) {
 		
 		try {
-			Context ctx = new InitialContext();
-			// Before getting an EntityManager, start a global transaction
-			UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-			tran.begin();
 			InvokeTracker invTracker = em.find(InvokeTracker.class, hostname);
 			invTracker.setCount();
-
-			// Commit the transaction
-			tran.commit();
 		} catch (Exception e) {
-	        System.out.println("Something went wrong. Caught exception " + e + newline);
+			LOG.info("Something went wrong. Caught exception " + e + newline);
 	    }
 	}
 	
@@ -144,21 +189,14 @@ public class InventoryManager {
   // do EM / JPA stuff here?
   public void createInvokeCnt(InvokeTracker invokeTracker){
 	try {
-    	Context ctx = new InitialContext();
-        // Before getting an EntityManager, start a global transaction
-        UserTransaction tran = (UserTransaction) ctx.lookup("java:comp/UserTransaction");
-        tran.begin();
-
-        System.out.println("AJM: Creating a new InvokeTracker with " + em.getDelegate().getClass() + newline);
+		LOG.info("Creating a new InvokeTracker with " + em.getDelegate().getClass() + newline);
 
         em.persist(invokeTracker);
 
-        // Commit the transaction 
-        tran.commit();
         String hostname = invokeTracker.getHostname();
-        System.out.println("Created and persisted SystemData instance for host name " + hostname + newline);
+        LOG.info("Created and persisted InvokeTracker instance for host name " + hostname + newline);
 	} catch (Exception e) {
-        System.out.println("Something went wrong. Caught exception " + e + newline);
+		LOG.info("Something went wrong. Caught exception " + e + newline);
     }	
   }
   

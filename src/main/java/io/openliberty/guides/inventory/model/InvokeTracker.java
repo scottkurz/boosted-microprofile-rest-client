@@ -15,10 +15,15 @@ package io.openliberty.guides.inventory.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import java.util.Date;
+
 import javax.persistence.Column;
 
 @Entity
-@Table(name = "INVOKECNT", schema = "APP")
+@Table
 public class InvokeTracker {
 
   @Id
@@ -28,6 +33,9 @@ public class InvokeTracker {
   @Column(name = "APP_INVOKE_CNT")
   int count;
   
+  @Temporal(TemporalType.DATE)
+  private Date invocationTS;
+  
   public InvokeTracker(){
 	  this.hostname = "hostname";
 	  this.count = 0;
@@ -36,7 +44,6 @@ public class InvokeTracker {
   public InvokeTracker(String hostname) {
     this.hostname = hostname;
 	this.count++;
-	System.out.println("AJM: put invoke cnt data into table?");
   }
 
   public String getHostname() {
@@ -50,7 +57,15 @@ public class InvokeTracker {
   public void setCount() {
 	  this.count++;
   }
+  
+  public void setTimestamp(Date invokeTimestamp) {
+	  this.invocationTS = invokeTimestamp;
+  }
 
+  public Date getTimestamp() {
+		// TODO Auto-generated method stub
+		return invocationTS	;
+	}
   
   @Override
   public boolean equals(Object host) {
@@ -59,4 +74,5 @@ public class InvokeTracker {
     }
     return false;
   }
+
 }
