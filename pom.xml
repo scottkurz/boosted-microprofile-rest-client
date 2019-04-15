@@ -56,31 +56,6 @@
 			<artifactId>jdbc</artifactId>
 		</dependency>
 
-		<!-- For tests -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>3.2.6</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-extension-providers</artifactId>
-			<version>3.2.6</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.json</artifactId>
-			<version>1.0.4</version>
-			<scope>test</scope>
-		</dependency>
-
 		<!-- Java utility classes -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -103,20 +78,6 @@
 							<goal>package</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>test-start-server</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test-stop-server</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
 				</executions>
 			</plugin>
 			<!-- War plugin -->
@@ -127,64 +88,6 @@
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<packagingExcludes>pom.xml</packagingExcludes>
-				</configuration>
-			</plugin>
-			<!-- Plugin to run unit tests -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M1</version>
-				<executions>
-					<execution>
-						<phase>test</phase>
-						<id>default-test</id>
-						<configuration>
-							<excludes>
-								<exclude>**/it/**</exclude>
-							</excludes>
-							<reportsDirectory>${project.build.directory}/test-reports/unit
-							</reportsDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Plugin to run functional tests -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.0.0-M1</version>
-				<executions>
-					<execution>
-						<phase>integration-test</phase>
-						<id>integration-test</id>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify-results</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includes>
-						<include>**/it/**/*.java</include>
-					</includes>
-					<!-- tag::system-props[] -->
-					<systemPropertyVariables>
-						<liberty.test.port>${testServerHttpPort}</liberty.test.port>
-						<ctx.root></ctx.root>
-					</systemPropertyVariables>
-					<!-- end::system-props[] -->
-					<runOrder>reversealphabetical</runOrder>
-					<summaryFile>
-						${project.build.directory}/test-reports/it/failsafe-summary.xml
-					</summaryFile>
-					<reportsDirectory>${project.build.directory}/test-reports/it
-					</reportsDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

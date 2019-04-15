@@ -116,7 +116,7 @@ public class InventoryManager {
 			setInvokeTS(hostname, setInvokeTS);
 			tran.commit();
 		} catch (Exception e) {
-			LOG.info("Something went wrong. Caught exception " + e + newline);
+			LOG.info("in get, Something went wrong. Caught exception " + e + newline);
 		}
 		LOG.info("App invoked : " + cnt + " times for host: " + hostname);
 		return properties;
@@ -133,7 +133,7 @@ public class InventoryManager {
 			}
 			
 		} catch (Exception e) {
-			LOG.info("Something went wrong. Caught exception " + e + newline);
+			LOG.info("in getLastInvokedTS, Something went wrong. Caught exception " + e + newline);
 		}
 		return invTracker.getTimestamp();
 	}
@@ -143,7 +143,7 @@ private void setInvokeTS(String hostname, Date time) {
 			InvokeTracker invTracker = em.find(InvokeTracker.class, hostname);
 			invTracker.setTimestamp(time);
 		} catch (Exception e) {
-			LOG.info("Something went wrong. Caught exception " + e + newline);
+			LOG.info("in setInvokeTS, Something went wrong. Caught exception " + e + newline);
 	    }
 		
 	}
@@ -160,7 +160,7 @@ public int getInvokeCnt(String hostname) {
 			}
 			
 		} catch (Exception e) {
-			LOG.info("Something went wrong. Caught exception " + e + newline);
+			LOG.info("in getInvokeCnt, Something went wrong. Caught exception " + e + newline);
 		}
 		return invTracker.getCount();
 	}
@@ -169,9 +169,16 @@ public int getInvokeCnt(String hostname) {
 		
 		try {
 			InvokeTracker invTracker = em.find(InvokeTracker.class, hostname);
-			invTracker.setCount();
+			if (invTracker == null) {
+				createInvokeCnt(new InvokeTracker(hostname));
+				invTracker = em.find(InvokeTracker.class, hostname);
+			}
+			else {
+				invTracker.setCount();
+			}
 		} catch (Exception e) {
-			LOG.info("Something went wrong. Caught exception " + e + newline);
+			LOG.info("in incInvokeCnt, Something went wrong. Caught exception " + e + newline);
+			e.printStackTrace();
 	    }
 	}
 	
@@ -196,7 +203,7 @@ public int getInvokeCnt(String hostname) {
         String hostname = invokeTracker.getHostname();
         LOG.info("Created and persisted InvokeTracker instance for host name " + hostname + newline);
 	} catch (Exception e) {
-		LOG.info("Something went wrong. Caught exception " + e + newline);
+		LOG.info("in createInvokeCnt, Something went wrong. Caught exception " + e + newline);
     }	
   }
   
