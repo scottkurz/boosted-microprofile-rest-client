@@ -9,16 +9,25 @@
 	<artifactId>boosted-microprofile-rest-client</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<!-- tag::ports[] -->
-		<testServerHttpPort>8080</testServerHttpPort>
-		<testServerHttpsPort>8443</testServerHttpsPort>
-		<!-- end::ports[] -->
 	</properties>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>boost.boosters</groupId>
+				<artifactId>mp20-bom</artifactId>
+				<version>0.1.3-SNAPSHOT</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	
 	<dependencies>
 		<!-- Boosters -->
@@ -47,15 +56,33 @@
 			<artifactId>jpa</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>javax.activation-api</artifactId>
-			<version>1.2.0</version>
-		</dependency>
-		<dependency>
 			<groupId>boost.boosters</groupId>
 			<artifactId>jdbc</artifactId>
 		</dependency>
 
+        <!-- Database -->
+		<!--
+		<dependency>
+    		<groupId>org.apache.derby</groupId>
+    		<artifactId>derby</artifactId>
+    		<version>10.14.2.0</version>
+    		<scope>provided</scope>
+		</dependency>
+		-->
+		
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.15</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Runtime -->
+		<dependency>
+			<groupId>boost.runtimes</groupId>
+			<artifactId>openliberty</artifactId>
+		</dependency>
+		
 		<!-- Java utility classes -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -80,60 +107,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- War plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.2</version>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<packagingExcludes>pom.xml</packagingExcludes>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>boost.boosters</groupId>
-				<artifactId>ee8-bom</artifactId>
-				<version>0.1.3-SNAPSHOT</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>boost.boosters</groupId>
-				<artifactId>mp20-bom</artifactId>
-				<version>0.1.3-SNAPSHOT</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>boost.runtimes</groupId>
-				<artifactId>runtimes-bom</artifactId>
-				<version>0.1.3-SNAPSHOT</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-	<profiles>
-		<profile>
-			<id>tomee</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>tomee</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>boost.runtimes</groupId>
-					<artifactId>tomee</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 </project>
