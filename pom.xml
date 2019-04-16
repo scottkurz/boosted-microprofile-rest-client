@@ -55,28 +55,24 @@
 			<groupId>boost.boosters</groupId>
 			<artifactId>jpa</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>boost.boosters</groupId>
-			<artifactId>jdbc</artifactId>
-		</dependency>
 
         <!-- Database -->
-		<!--
 		<dependency>
     		<groupId>org.apache.derby</groupId>
     		<artifactId>derby</artifactId>
     		<version>10.14.2.0</version>
     		<scope>provided</scope>
 		</dependency>
-		-->
 		
+		<!--
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.15</version>
 			<scope>provided</scope>
 		</dependency>
-
+		-->
+		
 		<!-- Runtime -->
 		<dependency>
 			<groupId>boost.runtimes</groupId>
