@@ -12,6 +12,14 @@ The application is a simple MicroProfile application that uses MP RestClient and
 
 The application project's pom.xml has been configured to use the boost plugin and the boost technology booster dependencies.
 
+### Build the Boost Maven Plugin
+
+(Temporary step, since the plugin is under development and not currently released)
+
+1. `git clone git@github.com:OpenLiberty/boost.git`
+2. `boost-maven.sh`
+3. `mvn clean install`  (To run integration tests, add the -Pit parameter)
+
 ### Package your application
 
 Run the Maven package command as you normally would when building a Java EE or MicroProfile Application:
