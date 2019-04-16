@@ -18,7 +18,6 @@ The application project's pom.xml has been configured to use the boost plugin an
 
 1. `git clone git@github.com:OpenLiberty/boost.git`
 2. `boost-maven.sh`
-3. `mvn clean install`  (To run integration tests, add the -Pit parameter)
 
 ### Package your application
 
