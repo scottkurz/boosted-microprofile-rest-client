@@ -6,7 +6,7 @@ This is a basic walkthrough of how to use the Boost Maven Plugin to package an e
 
 To get started, you will first need a basic J2EE or Microprofile application. You can clone the following project as an instructional guide:
 
-`git clone git@github.com:awisniew90/boosted-microprofile-rest-client.git`
+`git clone git@github.com:OpenLiberty/boosted-microprofile-rest-client.git`
 
 The application is a simple MicroProfile application that uses MP RestClient and MP Config to retrieve and display system properties for a target server. The application also uses JPA services to track an invocation counter and timestamp value.
 
